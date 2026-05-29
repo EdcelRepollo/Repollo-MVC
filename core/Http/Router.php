@@ -1,95 +1,100 @@
-<?php // Start Router class file.
+<?php // Sugod sa Router class file.
 
-declare(strict_types=1); // Strict typing enabled.
+declare(strict_types=1); // Gi-enable ang strict typing para klaro ang expected types.
 
-namespace Core\Http; // Namespace for HTTP classes.
+namespace Core\Http; // Namespace ni para sa mga HTTP-related classes.
 
-use RuntimeException; // Used for 404 route errors.
+use RuntimeException; // Gamiton ni kung walay route nga makita, pareho sa 404 error.
 
-final class Router // Registers and resolves application routes.
+final class Router // Mo-register ug mo-resolve sa application routes.
 {
     /**
-     * Route table grouped by HTTP method.
+     * Route table nga gi-group by HTTP method, like GET ug POST.
+     * Diri ibutang tanan registered routes aron dali pangitaon later.
      *
      * @var array<string, array<int, array{uri: string, action: array{0: class-string, 1: string}}>>
      */
-    private array $routes = []; // Stored routes grouped by HTTP method.
+    private array $routes = []; // Storage sa routes nga naka-group per HTTP method.
 
     /**
-     * Register GET route; usually for showing pages.
+     * Mo-register ug GET route.
+     * Kasagaran gamit ani kay pagpakita ug pages or pagkuha ug data.
      *
      * @param array{0: class-string, 1: string} $action
      */
-    public function get(string $uri, array $action): void // Register a GET route.
+    public function get(string $uri, array $action): void // Register usa ka GET route.
     {
-        $this->register('GET', $uri, $action); // Delegate to shared register helper.
+        $this->register('GET', $uri, $action); // Ipaagi sa shared register helper para reusable ang logic.
     }
 
     /**
-     * Register POST route; usually for forms/actions that change data.
+     * Mo-register ug POST route.
+     * Kasagaran gamit ani kay forms or actions nga mo-change ug data.
      *
      * @param array{0: class-string, 1: string} $action
      */
-    public function post(string $uri, array $action): void // Register a POST route.
+    public function post(string $uri, array $action): void // Register usa ka POST route.
     {
-        $this->register('POST', $uri, $action); // Delegate to shared register helper.
+        $this->register('POST', $uri, $action); // Ipaagi sa shared register helper para pareho ra ang storage process.
     }
 
-    public function resolve(Request $request): Route // Find route matching current request.
+    public function resolve(Request $request): Route // Pangitaon ang route nga match sa current request.
     {
-        // Check routes for current method and find one matching the request path.
-        foreach ($this->routes[$request->method()] ?? [] as $route) { // Loop routes for request method.
-            $params = $this->match($route['uri'], $request->path()); // Try matching route URI to request path.
+        // I-check tanan routes para sa current HTTP method, then pangitaon ang path nga match.
+        foreach ($this->routes[$request->method()] ?? [] as $route) { // Loop sa routes under sa request method.
+            $params = $this->match($route['uri'], $request->path()); // Sulayan ug match ang route URI sa actual request path.
 
-            if ($params !== null) { // If route matched...
-                return new Route($route['action'][0], $route['action'][1], $params); // Return controller/action/params.
-            } // End match check.
-        } // End route loop.
+            if ($params !== null) { // Kung naay match nga route...
+                return new Route($route['action'][0], $route['action'][1], $params); // Ibalik ang controller, method/action, ug route params.
+            } // Human sa route match check.
+        } // Human sa route loop.
 
-        // No matching route means page not found.
-        throw new RuntimeException('Page not found.', 404); // Throw 404 when no route matches.
+        // Kung walay matching route, meaning page not found.
+        throw new RuntimeException('Page not found.', 404); // Mo-throw ug 404 kung walay route nga ni-match.
     }
 
     /**
-     * Save route in route table.
+     * I-save ang route sa route table.
+     * Ang method kay GET/POST, ang URI kay path, ug ang action kay controller + method.
      *
      * @param array{0: class-string, 1: string} $action
      */
-    private function register(string $method, string $uri, array $action): void // Store one route.
+    private function register(string $method, string $uri, array $action): void // I-store ang usa ka route.
     {
-        $this->routes[$method][] = [ // Add route under HTTP method.
-            'uri' => '/' . trim($uri, '/'), // Normalize URI with leading slash.
-            'action' => $action, // Store controller and method pair.
-        ]; // End route array.
+        $this->routes[$method][] = [ // Idugang ang route under sa iyang HTTP method.
+            'uri' => '/' . trim($uri, '/'), // I-normalize ang URI aron naa pirmi leading slash.
+            'action' => $action, // I-store ang controller class ug method name pair.
+        ]; // Human sa route array.
     }
 
     /**
-     * Match route URI with request path and return params like id.
+     * I-match ang route URI sa request path.
+     * Kung naay dynamic segments like /tasks/{id}, ibalik ang params like ['id' => '1'].
      *
      * @return array<string, string>|null
      */
-    private function match(string $routeUri, string $requestPath): ?array // Match route pattern to request path.
+    private function match(string $routeUri, string $requestPath): ?array // I-match ang route pattern sa request path.
     {
-        // Convert /tasks/{id} into regex and remember param names.
-        $paramNames = []; // Store parameter names like id.
-        $pattern = preg_replace_callback('/\{([a-zA-Z_][a-zA-Z0-9_]*)}/', function (array $matches) use (&$paramNames): string { // Replace {param} with regex.
-            $paramNames[] = $matches[1]; // Remember param name.
+        // I-convert ang /tasks/{id} into regex, then i-remember ang param names.
+        $paramNames = []; // Storage sa parameter names like id.
+        $pattern = preg_replace_callback('/\{([a-zA-Z_][a-zA-Z0-9_]*)}/', function (array $matches) use (&$paramNames): string { // Ilisan ang {param} ug regex.
+            $paramNames[] = $matches[1]; // I-remember ang param name.
 
-            return '([^/]+)'; // Match one URL segment.
-        }, $routeUri); // Build final regex pattern.
+            return '([^/]+)'; // Mo-match ug usa ka URL segment only.
+        }, $routeUri); // Himoon ang final regex pattern.
 
-        if (! is_string($pattern)) { // If regex conversion failed...
-            return null; // Treat as no match.
-        } // End pattern check.
+        if (! is_string($pattern)) { // Kung failed ang regex conversion...
+            return null; // Treat as no match aron dili mo-crash ang router.
+        } // Human sa pattern check.
 
-        // If path does not match, this route is skipped.
-        if (! preg_match('#^' . $pattern . '$#', $requestPath, $matches)) { // Test request path.
-            return null; // No match for this route.
-        } // End regex match.
+        // Kung dili mo-match ang path, i-skip ni nga route.
+        if (! preg_match('#^' . $pattern . '$#', $requestPath, $matches)) { // I-test ang request path against sa regex.
+            return null; // Walay match para ani nga route.
+        } // Human sa regex match.
 
-        // Remove full match and pair remaining values with param names.
-        array_shift($matches); // Remove whole matched path.
+        // Tangtangon ang full match, then i-pair ang remaining values sa param names.
+        array_shift($matches); // Tangtangon ang whole matched path.
 
-        return array_combine($paramNames, $matches) ?: []; // Return params like ['id' => '1'].
+        return array_combine($paramNames, $matches) ?: []; // Ibalik ang params like ['id' => '1']; empty array kung walay params.
     }
-} // End Router class.
+} // Human sa Router class.
