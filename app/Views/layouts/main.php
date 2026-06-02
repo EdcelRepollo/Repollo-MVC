@@ -19,13 +19,6 @@
             <!-- Brand link; mo balik sa task list page. -->
             <a class="brand" href="/tasks">Task Manager</a>
 
-            <!-- Action buttons; diri ibutang ang quick actions like create task. -->
-            <div class="actions">
-                <!-- GET form; mo open sa create task page without changing data. -->
-                <form method="get" action="/tasks/create">
-                    <button type="submit">New Task</button>
-                </form>
-            </div>
         </nav>
     </header>
 

@@ -3,7 +3,6 @@
 /** @var list<array<string, mixed>> $tasks */
 ?>
 <h1>Task Manager</h1>
-<p>Track small project work using PHP MVC framework.</p>
 
 <!-- Create button; mo adto sa create task form. -->
 <form method="get" action="/tasks/create">

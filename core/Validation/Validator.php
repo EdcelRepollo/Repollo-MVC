@@ -1,111 +1,114 @@
-<?php // Start PHP file; Validator class begins here.
+<?php // Start sa PHP file; diri magsugod ang Validator class.
 
-declare(strict_types=1); // Strict types para consistent ang validation inputs.
+declare(strict_types=1); // Gi-enable ang strict types para consistent ang validation inputs.
 
-namespace Core\Validation; // Namespace for validation helpers.
+namespace Core\Validation; // Namespace for validation helpers, diri naka-organize ang validation code.
 
-final class Validator // Final validator; handles form validation rules.
+final class Validator // Final validator; siya ang mo-handle sa form validation rules.
 {
     /**
-     * Validation errors grouped by field name.
+     * Validation errors nga gi-group by field name.
+     * Ang matag field pwede naay multiple error messages.
      *
      * @var array<string, list<string>>
      */
-    private array $errors = []; // Current validation errors.
+    private array $errors = []; // Current validation errors nga na-detect sa latest validation run.
 
     /**
-     * Check data against rules; returns true kung valid tanan fields.
+     * I-check ang data against sa rules.
+     * Mo-return ug true kung valid tanan fields, false kung naay errors.
      *
      * @param array<string, mixed> $data
      * @param array<string, list<string>> $rules
      */
-    public function validate(array $data, array $rules): bool // Validate data using provided rules.
+    public function validate(array $data, array $rules): bool // Validate ang data gamit ang provided rules.
     {
-        // Reset errors every validation run.
-        $this->errors = []; // Clear previous errors.
+        // I-reset ang errors every validation run para fresh ang result.
+        $this->errors = []; // Clear previous errors gikan sa last validation.
 
-        // Loop each field and apply its rules one by one.
-        foreach ($rules as $field => $fieldRules) { // Go through each field and its rules.
-            $value = $data[$field] ?? null; // Get submitted field value or null.
+        // I-loop ang each field then i-apply ang rules one by one.
+        foreach ($rules as $field => $fieldRules) { // Iagi ang matag field ug ang iyang rules.
+            $value = $data[$field] ?? null; // Kuhaon ang submitted field value, or null kung wala.
 
-            foreach ($fieldRules as $rule) { // Check each rule for this field.
-                // Split rule like min:3 into name=min and argument=3.
-                [$name, $argument] = array_pad(explode(':', $rule, 2), 2, null); // Separate rule name and argument.
+            foreach ($fieldRules as $rule) { // I-check ang matag rule para ani nga field.
+                // I-split ang rule like min:3 into name=min and argument=3.
+                [$name, $argument] = array_pad(explode(':', $rule, 2), 2, null); // Bulagon ang rule name ug optional argument.
 
-                // Skip non-required checks when empty; required handles empty value.
-                if ($this->isEmpty($value) && $name !== 'required') { // If empty and not required rule...
-                    continue; // Skip other rules for empty optional value.
-                } // End skip check.
+                // I-skip ang non-required checks kung empty; required rule maoy mo-handle sa blank value.
+                if ($this->isEmpty($value) && $name !== 'required') { // Kung empty and dili required rule...
+                    continue; // Skip other rules kay optional empty value ni.
+                } // End sa skip check.
 
-                // Match rule name and check if value passes.
-                $valid = match ($name) { // Choose validation logic by rule name.
-                    'required' => ! $this->isEmpty($value), // Required means value is not blank.
-                    'min' => mb_strlen((string) $value) >= (int) $argument, // Minimum character length.
-                    'max' => mb_strlen((string) $value) <= (int) $argument, // Maximum character length.
-                    'date' => $this->isDate((string) $value), // Must be valid Y-m-d date.
-                    'in' => in_array((string) $value, explode(',', (string) $argument), true), // Must be in allowed list.
-                    'integer' => filter_var($value, FILTER_VALIDATE_INT) !== false, // Must be integer value.
-                    default => true, // Unknown rules pass; simple fallback.
-                }; // Validation result for this rule.
+                // I-match ang rule name then i-check kung mo-pass ang value sa specific rule.
+                $valid = match ($name) { // Pili-on ang validation logic based sa rule name.
+                    'required' => ! $this->isEmpty($value), // Required means dapat dili blank ang value.
+                    'min' => mb_strlen((string) $value) >= (int) $argument, // Minimum character length nga required.
+                    'max' => mb_strlen((string) $value) <= (int) $argument, // Maximum character length nga allowed.
+                    'date' => $this->isDate((string) $value), // Dapat valid Y-m-d date format.
+                    'in' => in_array((string) $value, explode(',', (string) $argument), true), // Dapat naa sa allowed list.
+                    'integer' => filter_var($value, FILTER_VALIDATE_INT) !== false, // Dapat integer value.
+                    default => true, // Unknown rules mo-pass as fallback para dili mo-fail unexpectedly.
+                }; // Result sa validation para ani nga rule.
 
-                if (! $valid) { // If rule failed...
-                    // Save user-friendly error message for this field.
-                    $this->errors[$field][] = $this->message($field, $name, $argument); // Add error message.
-                } // End failed-rule check.
-            } // End rules loop for field.
-        } // End fields loop.
+                if (! $valid) { // Kung failed ang rule...
+                    // I-save ang user-friendly error message para ani nga field.
+                    $this->errors[$field][] = $this->message($field, $name, $argument); // Idugang ang error message ani nga field.
+                } // End sa failed-rule check.
+            } // End sa rules loop para sa field.
+        } // End sa fields loop.
 
-        // No errors means validation passed.
-        return $this->errors === []; // True if no validation errors.
+        // Kung walay errors, meaning passed ang validation.
+        return $this->errors === []; // True kung walay validation errors.
     }
 
     /**
-     * Return validation errors; gamiton sa form display.
+     * I-return ang validation errors.
+     * Gamiton ni sa controller or view para ma-display ang form errors.
      *
      * @return array<string, list<string>>
      */
-    public function errors(): array // Return stored validation errors.
+    public function errors(): array // I-return ang stored validation errors.
     {
-        return $this->errors; // Give errors to controller/view.
+        return $this->errors; // Ihatag ang errors sa controller/view.
     }
 
-    private function isEmpty(mixed $value): bool // Check if value is blank.
+    private function isEmpty(mixed $value): bool // Check kung blank ba ang value.
     {
         // Empty means null or blank string after trim.
-        return $value === null || trim((string) $value) === ''; // True for null or empty text.
+        return $value === null || trim((string) $value) === ''; // True kung null or empty text.
     }
 
-    private function isDate(string $value): bool // Check if string is valid Y-m-d date.
+    private function isDate(string $value): bool // Check kung valid Y-m-d date ba ang string.
     {
-        // Accept date only when it matches Y-m-d format.
-        $timestamp = strtotime($value); // Convert date text to timestamp.
+        // I-accept ang date only kung mo-match sa exact Y-m-d format.
+        $timestamp = strtotime($value); // I-convert ang date text into timestamp.
 
-        return $timestamp !== false && date('Y-m-d', $timestamp) === $value; // Ensure exact format matches.
+        return $timestamp !== false && date('Y-m-d', $timestamp) === $value; // Siguraduhon nga exact format ang match.
     }
 
-    private function message(string $field, string $rule, ?string $argument): string // Build readable error message.
+    private function message(string $field, string $rule, ?string $argument): string // Mag-build ug readable error message.
     {
-        // Custom messages for required fields.
-        if ($rule === 'required') { // Required rule gets special messages.
-            return match ($field) { // Choose required message by field.
-                'title' => 'Title is required.', // Title missing message.
-                'description' => 'Description is required.', // Description missing message.
-                'due_date' => 'Due Date is Required.', // Due date missing message.
+        // Custom messages for required fields para mas clear sa user.
+        if ($rule === 'required') { // Required rule naay special messages.
+            return match ($field) { // Pili-on ang required message based sa field.
+                'title' => 'Title is required.', // Message kung missing ang title.
+                'description' => 'Description is required.', // Message kung missing ang description.
+                'due_date' => 'Due Date is Required.', // Message kung missing ang due date.
                 default => ucfirst(str_replace('_', ' ', $field)) . ' is required.', // Generic required message.
-            }; // End required message match.
-        } // End required message block.
+            }; // End sa required message match.
+        } // End sa required message block.
 
-        // Convert field name to readable label.
-        $label = $field === 'due_date' ? 'Due Date' : ucfirst(str_replace('_', ' ', $field)); // Human-readable field label.
+        // I-convert ang field name into readable label.
+        $label = $field === 'due_date' ? 'Due Date' : ucfirst(str_replace('_', ' ', $field)); // Human-readable label para limpyo ang error text.
 
-        // Return message based on failed rule.
-        return match ($rule) { // Choose message by failed rule.
-            'min' => "{$label} must be at least {$argument} characters.", // Too short message.
-            'max' => "{$label} must not be greater than {$argument} characters.", // Too long message.
-            'date' => "{$label} must be a valid date.", // Invalid date message.
-            'in' => "{$label} has an invalid value.", // Not in allowed list message.
-            'integer' => "{$label} must be an integer.", // Invalid integer message.
+        // I-return ang message based sa failed rule.
+        return match ($rule) { // Pili-on ang message based sa failed rule.
+            'min' => "{$label} must be at least {$argument} characters.", // Message kung kulang ang characters.
+            'max' => "{$label} must not be greater than {$argument} characters.", // Message kung sobra ang characters.
+            'date' => "{$label} must be a valid date.", // Message kung invalid ang date.
+            'in' => "{$label} has an invalid value.", // Message kung wala sa allowed list.
+            'integer' => "{$label} must be an integer.", // Message kung dili integer.
             default => "{$label} is invalid.", // Generic invalid message.
-        }; // End message match.
+        }; // End sa message match.
     }
-} // End Validator class.
+} // End sa Validator class.
