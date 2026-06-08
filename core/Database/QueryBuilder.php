@@ -2,6 +2,7 @@
 
 declare(strict_types=1); // Strict typing enabled.
 
+// simple query builder para maghimo ug SQL statements sa model.
 namespace Core\Database; // Namespace for database layer.
 
 use PDO; // PDO used to prepare/execute SQL.

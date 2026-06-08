@@ -2,6 +2,7 @@
 
 declare(strict_types=1); // Strict typing enabled.
 
+// SQLite driver, nag-connect sa local file-based database.
 namespace Core\Database; // Namespace for database layer.
 
 use PDO; // PDO class for database connection.

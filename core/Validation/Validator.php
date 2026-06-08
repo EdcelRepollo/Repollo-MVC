@@ -1,6 +1,7 @@
 <?php // Start sa PHP file; diri magsugod ang Validator class.
 
 declare(strict_types=1); // Gi-enable ang strict types para consistent ang validation inputs.
+// validator nga mo-check sa form data kung sakto ang format ug required fields.
 
 namespace Core\Validation; // Namespace for validation helpers, diri naka-organize ang validation code.
 

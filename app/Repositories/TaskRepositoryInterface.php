@@ -2,6 +2,7 @@
 
 declare(strict_types=1); // Strict typing enabled.
 
+// kontrata para sa task repository, klaro unsa ang methods nga dapat naa.
 namespace App\Repositories; // Namespace for repository contracts.
 
 interface TaskRepositoryInterface // Contract for task repository behavior.

@@ -2,6 +2,7 @@
 
 declare(strict_types=1); // Strict typing enabled.
 
+// base model nga mo-provide ug common CRUD behavior sa tanan models.
 namespace Core\Database; // Namespace for database layer.
 
 use PDO; // PDO used for database queries.

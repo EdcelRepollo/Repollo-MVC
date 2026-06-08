@@ -2,6 +2,7 @@
 
 declare(strict_types=1); // Strict type checking.
 
+// model para sa tasks table, nag-specify unsa nga columns ang pwede gamiton.
 namespace App\Models; // Namespace for app models.
 
 use Core\Database\Model; // Base model with CRUD helpers.

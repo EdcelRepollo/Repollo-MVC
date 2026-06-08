@@ -2,6 +2,7 @@
 
 declare(strict_types=1); // Gi-enable ang strict typing.
 
+// controller nga nag-handle sa task pages, forms, ug actions.
 namespace App\Controllers; // Namespace para sa app controllers.
 
 use App\Repositories\TaskRepositoryInterface; // Contract para sa task data operations.

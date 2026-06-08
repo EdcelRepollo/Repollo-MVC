@@ -1,5 +1,6 @@
 <?php // Start PHP routes file; diri gi define ang web URLs.
 
+// diri nimo i-register ang mga URL paths ug controllers nga mo-handle ana.
 declare(strict_types=1); // Use strict types for route callback.
 
 use App\Controllers\TaskController; // Controller that handles task pages/actions.

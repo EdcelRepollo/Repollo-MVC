@@ -1,5 +1,6 @@
 <?php // Start PHP front controller; tanan browser requests mo agi diri.
 
+// front controller sa app, nag-load sa config, routes, ug nag-run sa request.
 declare(strict_types=1); // Enforce strict typing for safer PHP code.
 
 // Load Composer autoload; kani ang mo load sa classes automatically.

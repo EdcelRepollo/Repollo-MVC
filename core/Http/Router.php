@@ -6,6 +6,7 @@ namespace Core\Http;
 
 use RuntimeException;
 
+// router mo-match sa request path ngadto sa sakto nga controller action.
 final class Router
 {
     private array $routes = [];

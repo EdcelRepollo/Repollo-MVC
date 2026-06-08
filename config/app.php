@@ -2,6 +2,7 @@
 
 declare(strict_types=1); // Strict types for config file.
 
+// general app settings like name and debug mode.
 // General app settings; kani ang basic config sa website.
 return [ // Return app configuration array.
     // App name; used as project label/title.

@@ -2,6 +2,7 @@
 
 declare(strict_types=1); // Strict types enabled.
 
+// repository para sa task data operations, nag-bridge sa model ug controller.
 namespace App\Repositories; // Namespace for repositories.
 
 use App\Models\Task; // Task model used for database actions.

@@ -2,6 +2,7 @@
 
 declare(strict_types=1); // Strict types for config file.
 
+// database settings, which driver to use and where to store the file.
 // Database settings; diri gi specify unsa nga database driver ug file gamiton.
 return [ // Return database configuration array.
     // SQLite driver; simple file-based database siya.

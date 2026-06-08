@@ -2,6 +2,7 @@
 
 declare(strict_types=1); // Strict typing enabled.
 
+// interface para mahimong flexible ang database driver implementations.
 namespace Core\Database; // Namespace for database layer.
 
 use PDO; // PDO return type for driver connection.

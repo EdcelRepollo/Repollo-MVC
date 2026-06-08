@@ -2,6 +2,7 @@
 
 declare(strict_types=1); // Strict typing enabled.
 
+// view engine nag-render sa PHP views ug nag-layout sa content.
 namespace Core\View; // Namespace for view-related classes.
 
 use RuntimeException; // Used when a view file cannot be found.

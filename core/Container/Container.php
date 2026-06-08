@@ -2,6 +2,7 @@
 
 declare(strict_types=1); // Strict typing enabled.
 
+// simple dependency container, mo-create ug manage sa objects ug services.
 namespace Core\Container; // Namespace for dependency container.
 
 use ReflectionClass; // Used to inspect classes.

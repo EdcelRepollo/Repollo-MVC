@@ -2,6 +2,7 @@
 
 declare(strict_types=1); // Strict typing enabled.
 
+// main app class nga nag-setup sa services, database, routes, ug nag-process sa request.
 namespace Core; // Core namespace for main app class.
 
 use App\Models\Task; // Task model binding.

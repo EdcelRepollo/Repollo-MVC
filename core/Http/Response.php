@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Core\Http;
 
+// wraps response data, headers, and status code for sending to the browser.
 final class Response
 {
     public function __construct(

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Core\Http;
 
+// captures the current HTTP request and gives access to inputs and route params.
 final class Request
 {
     public function __construct(

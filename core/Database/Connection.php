@@ -2,6 +2,7 @@
 
 declare(strict_types=1); // Strict typing enabled.
 
+// connection manager para sa PDO database, lazy load lang kung kinahanglan.
 namespace Core\Database; // Namespace for database layer.
 
 use PDO; // PDO class for database connection.
